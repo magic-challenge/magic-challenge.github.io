@@ -6,10 +6,11 @@ var foundIds = [];
 var showed = 0;
 var remained = 0;
 var attempts = 0;
+var secret = "";
 
-function game(images, secret) {
-    createGameBoard(images);
-    console.log(atob(secret));
+function game(images, mysecret) {
+    secret = atob(mysecret);
+    createGameBoard(images, secret);
 };
 
 
@@ -35,7 +36,7 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 };
 
-function createGameBoard(images) {
+function createGameBoard(images, secret) {
     $('#attemptsCounter').html('Attempts counter: 0');
     processImages(images);
 };
@@ -85,7 +86,7 @@ function playCard(card) {
                 updateRemained();
                 showed = 0;
                 if (remained == 0) {
-                    $('#gameTitle').html('You won!');
+                    $('#gameTitle').html('You won! This is our secret phrase: ' + secret);
                 }
             } else {
                 setTimeout(function() {
