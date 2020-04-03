@@ -8,3 +8,4 @@ We have some test for you:
 
 * [Transport (Magic Challenge, chapter 3)](transport)
 * [Animals](animals)
+* [Items in your bag](bag)

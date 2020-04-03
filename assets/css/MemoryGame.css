@@ -1,5 +1,5 @@
 body {
-  font-family: "Helvetica", "Times", sans-serif;
+  font-family: "Helvetica", sans-serif;
   margin: 0 auto;
   max-width: 800px;
   line-height: 1.5;
@@ -10,112 +10,47 @@ body {
 h1,
 h2,
 strong {
-  color: #111;
+  color: #222222;
 }
 
-/*
-Radio buttons
-http://dimox.name/custom-checkboxes-and-radio-buttons-using-css-only/
- */
-.radio {
-  vertical-align: top;
-  width: 17px;
-  height: 17px;
-  margin: 0 30px 0 0;
-}
-.radio + label {
-  cursor: pointer;
-}
-.radio:not(checked) {
-  position: absolute;
-  opacity: 0;
-}
-.radio:not(checked) + label {
-  position: relative;
-  padding: 0 0 0 35px;
-}
-.radio:not(checked) + label:before {
-  content: '';
-  position: absolute;
-  top: -3px;
-  left: 0;
-  width: 22px;
-  height: 22px;
-  border: 1px solid #CDD1DA;
-  border-radius: 50%;
-  background: #FFF;
-}
-.radio:not(checked) + label:after {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 4px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #9FD468;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.5);
-  opacity: 0;
-  transition: all .2s;
-}
-.radio:checked + label:after {
-  opacity: 1;
-}
-.radio:focus + label:before {
-  box-shadow: 0 0 0 3px rgba(255,255,0,.5);
-}
 
-/*
-Input file field:
-http://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/
- */
-.inputfile {
-  width: 0.1px;
-  height: 0.1px;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
-}
-.inputfile + label {
-  padding: 10px;
-  width: 120px;
-  text-align: center;
-  background-color: #9FD468;
-  display: inline-block;
-}
-.inputfile:focus + label,
-.inputfile + label:hover {
-  background-color: #6DA72F;
-}
-.inputfile + label {
-  cursor: pointer; /* "hand" cursor */
-}
-.inputfile:focus + label {
-  outline: 1px dotted #000;
-  outline: -webkit-focus-ring-color auto 5px;
-}
+div.mg-tile {
+  height: 160px;
+  width: 160px;
+  margin: 10px;
+  border: 1px black solid;
 
-/*
-Game board
- */
-.cube {
-  font-size: 1.5em;
-  float: left;
-  border: 2px solid black;
-  margin: 5px;
-  background: #FFF;
-  line-height: 150px;
-  width: 150px;
-  height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  float: left;
+  background-size: cover;
+  
   overflow: hidden;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
-.correct {
-  border: 2px solid #33CC00;
+
+div.mg-tile.done {
+  /* border: none !important; */
+  border-color: green;
+  box-shadow: none !important;
+  cursor: initial;
 }
-.cube img {
-  height: 100%;
+
+div.mg-tile:hover {
+  box-shadow: 0 0 10px #666;
+}
+
+div.mg-tile.notyet {
+  background-image: none !important;
+  font-size: 0px;
+}
+
+div.mg-container {
+  overflow: hidden;
 }

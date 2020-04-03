@@ -1,19 +1,3 @@
-var showTime = 1000;
-
-var id2html = {};
-var translator = {};
-var foundIds = [];
-var showed = 0;
-var remained = 0;
-var attempts = 0;
-var secret = "";
-
-function game(images, mysecret) {
-    secret = atob(mysecret);
-    createGameBoard(images, secret);
-};
-
-
 function shuffle(array) {
     var currentIndex = array.length,
         temporaryValue, randomIndex;
@@ -36,65 +20,74 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 };
 
-function createGameBoard(images, secret) {
-    $('#attemptsCounter').html('Attempts counter: 0');
-    processImages(images);
-};
-
-function updateRemained() {
-    $('#gameTitle').text(remained + ' words remained.');
-};
-
-function processImages(images) {
-    remained = images.length;
-    updateRemained();
-    var myIds = [];
-    var words = [];
-    for (var i = 0; i < images.length; i++) {
-        var name = images[i].split('.')[0].split('/').last();
-        words.push(name);
-
-        myIds.push(name);
-        myIds.push(name + '_image');
-    };
-    myIds = shuffle(myIds);
-    for (var i = 1; i <= myIds.length; i++) {
-        $('#gameBoard').append('<div class="cube" id="' + i + '" onclick="playCard($(this));">' + i + '<\/div>');
-        if (myIds[i - 1].endsWith('_image')) {
-            translator[i] = 1 + myIds.indexOf(myIds[i - 1].replace('_image', ''));
-            id2html[i] = '<img src="' + images[words.indexOf(myIds[i - 1].replace('_image', ''))] + '"/>';
-        } else {
-            translator[i] = 1 + myIds.indexOf(myIds[i - 1] + '_image');
-            id2html[i] = myIds[i - 1].capitalizeFirstLetter();
+var memory_game = function (id, feedbackid, secret, imagePaths) {
+    var match = function (id1, id2) { return (id1 !== id2) && (id1.split("-")[1] === id2.split("-")[1]); };
+    var board = document.getElementById(id);
+    var timeoutMs = 2000;
+    var left = imagePaths.length;
+    var open = [];
+    var t1 = null;
+    var clickcallback = function (event) {
+        event.preventDefault();
+        var t = event.target;
+        if (open.length >= 2) {
+            return;
         }
-    }
-};
-
-
-function playCard(card) {
-    if (!card.hasClass('correct')) {
-        $('#attemptsCounter').html('Attempts counter: ' + attempts);
-        card.hide().html(id2html[card.prop('id')]).fadeIn(300);
-        if (showed === 0) {
-            attempts += 1;
-            showed = card.prop('id');
-        } else {
-            if (translator[card.prop('id')] == showed) {
-                card.addClass('correct');
-                $('#' + showed).addClass('correct');
-                remained -= 1;
-                updateRemained();
-                showed = 0;
-                if (remained == 0) {
-                    $('#gameTitle').html('You won! This is our secret phrase: ' + secret);
+        if (open.includes(t.dataset.index)) {
+            return;
+        }
+        if (open.length === 0) {
+            t.classList.remove("notyet");
+            open.push(t.dataset.index);
+            t1 = setTimeout(function () {
+                t.classList.add("notyet");
+                open = open.filter(function (i) { return i !== t.dataset.index; });
+            }, timeoutMs);
+        }
+        else {
+            t.classList.remove("notyet");
+            if (match(open[0], t.dataset.index)) {
+                t.classList.add("done");
+                var a = board.querySelector("div[data-index=\"" + open[0] + "\"]");
+                a.classList.add("done");
+                a.onclick = null;
+                var b = board.querySelector("div[data-index=\"" + t.dataset.index + "\"]");
+                b.classList.add("done");
+                b.onclick = null;
+                clearTimeout(t1);
+                open = [];
+                left--;
+                if (left === 0) {
+                    var feedback = document.getElementById(feedbackid);
+                    feedback.innerText = "You won! The secret phrase is \"" + atob(secret) + "\"";
+                    feedback.classList.add("correct");
                 }
-            } else {
-                setTimeout(function() {
-                    card.html(card.prop('id'));
-                    $('#' + showed).html(showed);
-                    showed = 0;
-                }, showTime);
+            }
+            else {
+                open.push(t.dataset.index);
+                t1 = setTimeout(function () {
+                    t.classList.add("notyet");
+                    open = open.filter(function (i) { return i !== t.dataset.index; });
+                }, timeoutMs);
             }
         }
-    }
+    };
+    var blocks = [];
+    imagePaths.forEach(function (path, index) {
+        var word = path.split("/").slice(-1)[0].split(".")[0];
+        var imgdiv = document.createElement("div");
+        imgdiv.className = "mg-tile notyet";
+        imgdiv.style.backgroundImage = "url(" + path + ")";
+        imgdiv.dataset.index = "a-" + index;
+        imgdiv.onclick = clickcallback;
+        blocks.push(imgdiv);
+        var textdiv = document.createElement("div");
+        textdiv.className = "mg-tile notyet";
+        textdiv.innerText = word.split("_").join(" ");
+        textdiv.dataset.index = "b-" + index;
+        textdiv.onclick = clickcallback;
+        blocks.push(textdiv);
+    });
+    shuffle(blocks);
+    blocks.forEach(function (b) { return board.appendChild(b); });
 };
